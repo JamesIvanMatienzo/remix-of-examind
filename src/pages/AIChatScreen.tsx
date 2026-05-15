@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Send, Mic, Paperclip, Sparkles } from "lucide-react";
+import { ArrowLeft, Send, Mic, Paperclip, Sparkles, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import InlineQuizCard from "@/components/InlineQuizCard";
 
@@ -148,17 +148,29 @@ export default function AIChatScreen() {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <div className="shrink-0 px-4 pt-10 pb-3 border-b bg-card flex items-center gap-3">
-        <button onClick={() => navigate(`/subjects/${id}`)} className="text-muted-foreground">
-          <ArrowLeft className="h-5 w-5" />
+      <div className="sticky top-0 z-20 shrink-0 px-4 pt-[max(2.5rem,env(safe-area-inset-top))] pb-3 border-b bg-background/80 backdrop-blur-md flex items-center justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <button onClick={() => navigate(`/subjects/${id}`, { replace: true })} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: subject.color }}>
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <div className="flex-1 min-w-0 pr-2">
+            <p className="text-sm font-semibold truncate">{subject.name} Tutor</p>
+            <p className="text-[11px] text-muted-foreground truncate">{modeLabels[mode]}</p>
+          </div>
+        </div>
+
+        {/* UX FIX: Clear Escape Hatch to Dashboard */}
+        <button 
+          // UX FIX: Changed from "/" to "/home" so it bypasses the splash/signup screens
+          onClick={() => navigate("/home")} 
+          className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors shrink-0"
+          aria-label="Exit to Home"
+        >
+          <X className="h-4 w-4" /> 
         </button>
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: subject.color }}>
-          <Sparkles className="h-4 w-4 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{subject.name} Tutor</p>
-          <p className="text-[11px] text-muted-foreground">{modeLabels[mode]}</p>
-        </div>
       </div>
 
       {/* Messages */}

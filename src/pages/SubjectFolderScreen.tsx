@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -26,12 +26,20 @@ export default function SubjectFolderScreen() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Files");
   
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+    }
+  };
+  
   const [subjects] = useState(() => {
     const saved = localStorage.getItem("examind_subjects");
     return saved ? JSON.parse(saved) : defaultSubjects;
   });
 
-  // Find the matching subject, fallback to the first one if it somehow fails
   const subject = subjects.find((s: any) => s.id === id) || subjects[0];
 
   return (
@@ -107,20 +115,35 @@ export default function SubjectFolderScreen() {
               </div>
             ))}
 
-            {/* Upload FAB */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="fixed right-6 bottom-24 w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg"
-            >
-              <Plus className="h-6 w-6 text-primary-foreground" />
-            </motion.button>
+            {/* UX FIX: Hidden Native File Input */}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload} 
+              className="hidden" 
+              accept=".pdf,.docx,.png,.jpg,.jpeg" 
+            />
 
-            {/* Analyze Button */}
-            <div className="fixed bottom-20 left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface to-transparent pt-8">
-              <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2">
-                <Sparkles className="h-5 w-5" />
-                Analyze all files with AI
-              </Button>
+            {/* Combined Bottom Action Dock */}
+            <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface via-surface/95 to-transparent pt-12 z-20">
+              <div className="flex items-center gap-3">
+                
+                {/* 80% Width: Analyze Button */}
+                <Button className="flex-1 h-14 rounded-2xl text-base font-semibold gap-2 shadow-lg">
+                  <Sparkles className="h-5 w-5" />
+                  <span className="truncate">Analyze files with AI</span>
+                </Button>
+                
+                {/* 20% Width: Upload Button */}
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-14 h-14 shrink-0 rounded-2xl bg-primary flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
+                  aria-label="Upload File"
+                >
+                  <Plus className="h-6 w-6 text-primary-foreground" />
+                </motion.button>
+              </div>
             </div>
           </div>
         )}
@@ -137,7 +160,7 @@ export default function SubjectFolderScreen() {
                 key={i}
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-card border rounded-xl p-5 flex items-center gap-4 text-left hover:border-primary transition-colors"
-                onClick={() => navigate(`/subjects/${id}/chat?mode=${mode.key}`)}
+                onClick={() => navigate(`/subjects/${id}/chat?mode=${mode.key}`, { replace: true })}
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: mode.color + "15" }}>
                   <mode.icon className="h-6 w-6" style={{ color: mode.color }} />
