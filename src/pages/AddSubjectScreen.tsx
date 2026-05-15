@@ -18,10 +18,36 @@ export default function AddSubjectScreen() {
 
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [professor, setProfessor] = useState("");
-  const [semester, setSemester] = useState("");
-  const [yearLevel, setYearLevel] = useState("");
-  const [selectedColor, setSelectedColor] = useState(folderColors[0]);
+  const [examDate, setExamDate] = useState("");
+
+  const handleCreateSubject = () => {
+    if (!name.trim()) return; 
+
+    // Calculate days until exam
+    let daysLeft = 30; // default
+    if (examDate) {
+      const diffTime = new Date(examDate).getTime() - new Date().getTime();
+      daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    const saved = localStorage.getItem("examind_subjects");
+    const currentSubjects = saved ? JSON.parse(saved) : defaultSubjects;
+    
+    const newSubject = {
+      id: Date.now().toString(),
+      name: name,
+      code: code || "No Code",
+      files: 0,
+      daysUntilExam: daysLeft > 0 ? daysLeft : 0, // Prevent negative days
+      examDateString: examDate, 
+      color: selectedColor,
+      lastAccessed: "Just now"
+    };
+
+    const updatedSubjects = [...currentSubjects, newSubject];
+    localStorage.setItem("examind_subjects", JSON.stringify(updatedSubjects));
+    navigate("/subjects");
+  };
 
   return (
     <div className="min-h-screen bg-background px-6 py-6">
@@ -101,11 +127,11 @@ export default function AddSubjectScreen() {
 
         <div className="space-y-2">
           <Label>Next Exam Date</Label>
-          <Input
-            type="date"
-            className="h-12 rounded-xl"
-            value={nextExamDate}
-            onChange={(e) => setNextExamDate(e.target.value)}
+          <Input 
+            type="date" 
+            className="h-12 rounded-xl" 
+            value={examDate}
+            onChange={(e) => setExamDate(e.target.value)}
           />
         </div>
 

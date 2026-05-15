@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, Upload, Zap, Calendar, Sparkles } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useSubjects } from "@/contexts/SubjectsContext";
+import { defaultSubjects } from "./SubjectsPage";
 
 function getCountdownColor(days: number) {
   if (days <= 3) return "bg-destructive text-destructive-foreground";
@@ -14,7 +16,14 @@ export default function HomeDashboard() {
   const navigate = useNavigate();
   const { subjects } = useSubjects();
 
-  const urgentExam = subjects.find((s) => s.daysUntilExam <= 3);
+  // Load the dynamic subjects from localStorage
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
+
+  // Safely check for urgent exams
+  const urgentExam = subjects.find((s: any) => s.daysUntilExam !== undefined && s.daysUntilExam <= 3);
 
   return (
     <div className="min-h-screen bg-surface pb-20">
