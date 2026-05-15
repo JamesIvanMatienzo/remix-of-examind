@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, ChevronLeft, ChevronRight, Sparkles, Clock, BookOpen } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-
-const subjects = [
-  { id: "1", name: "Mathematics", color: "#D85A30" },
-  { id: "2", name: "Physics", color: "#1D9E75" },
-  { id: "3", name: "Filipino", color: "#534AB7" },
-  { id: "4", name: "History", color: "#EF9F27" },
-];
+import { defaultSubjects } from "./SubjectsPage";
 
 interface ExamEvent {
   id: string;
@@ -31,14 +25,7 @@ interface StudyTask {
   difficulty: "hard" | "medium" | "easy";
 }
 
-// Demo data
 const today = new Date();
-const demoExams: ExamEvent[] = [
-  { id: "e1", subjectId: "1", subjectName: "Mathematics", type: "Midterm", date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2), color: "#D85A30" },
-  { id: "e2", subjectId: "2", subjectName: "Physics", type: "Quiz", date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5), color: "#1D9E75" },
-  { id: "e3", subjectId: "3", subjectName: "Filipino", type: "Finals", date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 10), color: "#534AB7" },
-  { id: "e4", subjectId: "4", subjectName: "History", type: "Midterm", date: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 14), color: "#EF9F27" },
-];
 
 const demoStudyTasks: StudyTask[] = [
   { id: "s1", subjectId: "1", subjectName: "Mathematics", topic: "Ch.3 — Derivatives & Chain Rule", duration: "45 min", color: "#D85A30", date: today, difficulty: "hard" },
@@ -86,6 +73,26 @@ export default function SchedulePage() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState<Date>(today);
+
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
+
+  const demoExams: ExamEvent[] = subjects
+    .filter((s: any) => s.daysUntilExam !== undefined)
+    .map((s: any) => {
+      const examDate = new Date();
+      examDate.setDate(examDate.getDate() + s.daysUntilExam);
+      return {
+        id: `exam_${s.id}`,
+        subjectId: s.id,
+        subjectName: s.name,
+        type: "Exam", 
+        date: examDate,
+        color: s.color,
+      };
+    });
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
