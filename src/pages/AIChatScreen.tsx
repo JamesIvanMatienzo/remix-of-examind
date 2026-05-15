@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Send, Mic, Paperclip, Sparkles } from "lucide-react";
+import { ArrowLeft, Send, Mic, Paperclip, Sparkles, Home } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import InlineQuizCard from "@/components/InlineQuizCard";
 
@@ -149,7 +149,7 @@ export default function AIChatScreen() {
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
       <div className="shrink-0 px-4 pt-10 pb-3 border-b bg-card flex items-center gap-3">
-        <button onClick={() => navigate(`/subjects/${id}`)} className="text-muted-foreground">
+        <button onClick={() => navigate(`/subjects/${id}`, { replace: true })} className="text-muted-foreground">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: subject.color }}>
@@ -159,6 +159,13 @@ export default function AIChatScreen() {
           <p className="text-sm font-semibold truncate">{subject.name} Tutor</p>
           <p className="text-[11px] text-muted-foreground">{modeLabels[mode]}</p>
         </div>
+        <button
+          onClick={() => navigate("/home", { replace: true })}
+          className="w-9 h-9 rounded-full bg-surface border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+          title="Go to Home"
+        >
+          <Home className="h-4.5 w-4.5" />
+        </button>
       </div>
 
       {/* Messages */}

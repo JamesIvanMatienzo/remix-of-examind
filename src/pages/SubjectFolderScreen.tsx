@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles, Upload, X, File } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { defaultSubjects } from "./SubjectsPage";
 
@@ -25,21 +25,14 @@ export default function SubjectFolderScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Files");
-  
-  const [subjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
-
-  // Find the matching subject, fallback to the first one if it somehow fails
-  const subject = subjects.find((s: any) => s.id === id) || subjects[0];
+  const subject = subjectData[id || "1"] || subjectData["1"];
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
       {/* Header */}
       <div className="px-6 pt-10 pb-4" style={{ backgroundColor: subject.color }}>
         <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => navigate(-1)} className="text-white/80">
+          <button onClick={() => navigate("/home")} className="text-white/80">
             <ArrowLeft className="h-6 w-6" />
           </button>
           <div className="flex-1">
@@ -59,9 +52,8 @@ export default function SubjectFolderScreen() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === tab ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`px-4 py-3 text-sm font-medium transition-colors relative ${activeTab === tab ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               {tab}
               {activeTab === tab && (
@@ -73,7 +65,7 @@ export default function SubjectFolderScreen() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 pb-40">
         {activeTab === "Files" && (
           <div className="space-y-3">
             {/* Quick Stats */}
@@ -107,20 +99,23 @@ export default function SubjectFolderScreen() {
               </div>
             ))}
 
-            {/* Upload FAB */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="fixed right-6 bottom-24 w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg"
-            >
-              <Plus className="h-6 w-6 text-primary-foreground" />
-            </motion.button>
+            {/* Floating Action Elements */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none flex flex-col items-end gap-4">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => setShowUploadModal(true)}
+                className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg pointer-events-auto hover:shadow-xl transition-shadow"
+              >
+                <Plus className="h-6 w-6 text-primary-foreground" />
+              </motion.button>
 
-            {/* Analyze Button */}
-            <div className="fixed bottom-20 left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface to-transparent pt-8">
-              <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2">
-                <Sparkles className="h-5 w-5" />
-                Analyze all files with AI
-              </Button>
+              <div className="w-full pointer-events-auto">
+                <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2 shadow-lg">
+                  <Sparkles className="h-5 w-5" />
+                  Analyze all files with AI
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -137,7 +132,7 @@ export default function SubjectFolderScreen() {
                 key={i}
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-card border rounded-xl p-5 flex items-center gap-4 text-left hover:border-primary transition-colors"
-                onClick={() => navigate(`/subjects/${id}/chat?mode=${mode.key}`)}
+                onClick={() => navigate(`/subjects/${id}/chat?mode=${mode.key}`, { replace: true })}
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: mode.color + "15" }}>
                   <mode.icon className="h-6 w-6" style={{ color: mode.color }} />
@@ -167,6 +162,88 @@ export default function SubjectFolderScreen() {
           </div>
         )}
       </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        multiple
+        onChange={handleFileChange}
+      />
+
+      {/* Upload Modal */}
+      <AnimatePresence>
+        {showUploadModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4"
+            onClick={() => setShowUploadModal(false)}
+          >
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-card rounded-2xl w-full max-w-[400px] p-5 mb-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">Upload Files</h3>
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                Add exam papers, quizzes, modules, or handwritten notes to your {subject.name} folder.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect(".pdf,.doc,.docx")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <FileText className="h-8 w-8 text-primary" />
+                  <span className="text-xs font-medium">PDF / DOCX</span>
+                  <span className="text-[10px] text-muted-foreground">Documents</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect("image/*")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <Image className="h-8 w-8 text-emerald-500" />
+                  <span className="text-xs font-medium">Images</span>
+                  <span className="text-[10px] text-muted-foreground">Photos / Scans</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect(".ppt,.pptx,.xls,.xlsx")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <File className="h-8 w-8 text-amber-500" />
+                  <span className="text-xs font-medium">PPT / Excel</span>
+                  <span className="text-[10px] text-muted-foreground">Presentations</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect("*")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-xs font-medium">Any File</span>
+                  <span className="text-[10px] text-muted-foreground">Browse all</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

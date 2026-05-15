@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSubjects } from "@/contexts/SubjectsContext";
+import { useToast } from "@/hooks/use-toast";
 import { defaultSubjects } from "./SubjectsPage";
 
 const folderColors = ["#534AB7", "#D85A30", "#1D9E75", "#EF9F27", "#3B82F6", "#EC4899", "#8B5CF6", "#F97316"];
 
 export default function AddSubjectScreen() {
   const navigate = useNavigate();
-  const [selectedColor, setSelectedColor] = useState(folderColors[0]);
+  const { addSubject } = useSubjects();
+  const { toast } = useToast();
+
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [examDate, setExamDate] = useState("");
@@ -57,33 +61,28 @@ export default function AddSubjectScreen() {
       <div className="space-y-5">
         <div className="space-y-2">
           <Label>Subject Name</Label>
-          <Input 
-            placeholder="e.g. Mathematics" 
-            className="h-12 rounded-xl"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <Input placeholder="e.g. Mathematics" className="h-12 rounded-xl" />
         </div>
 
         <div className="space-y-2">
           <Label>Course Code (optional)</Label>
-          <Input 
-            placeholder="e.g. MATH 101" 
-            className="h-12 rounded-xl"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
+          <Input placeholder="e.g. MATH 101" className="h-12 rounded-xl" />
         </div>
 
         <div className="space-y-2">
           <Label>Professor Name (optional)</Label>
-          <Input placeholder="e.g. Dr. Santos" className="h-12 rounded-xl" />
+          <Input
+            placeholder="e.g. Dr. Santos"
+            className="h-12 rounded-xl"
+            value={professor}
+            onChange={(e) => setProfessor(e.target.value)}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label>Semester</Label>
-            <Select>
+            <Select value={semester} onValueChange={setSemester}>
               <SelectTrigger className="h-12 rounded-xl">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
@@ -96,7 +95,7 @@ export default function AddSubjectScreen() {
           </div>
           <div className="space-y-2">
             <Label>Year Level</Label>
-            <Select>
+            <Select value={yearLevel} onValueChange={setYearLevel}>
               <SelectTrigger className="h-12 rounded-xl">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
@@ -136,11 +135,7 @@ export default function AddSubjectScreen() {
           />
         </div>
 
-        <Button 
-          className="w-full h-12 rounded-xl text-base font-semibold mt-6" 
-          onClick={handleCreateSubject}
-          disabled={!name.trim()}
-        >
+        <Button className="w-full h-12 rounded-xl text-base font-semibold mt-6" onClick={() => navigate("/subjects")}>
           Create Subject
         </Button>
       </div>
