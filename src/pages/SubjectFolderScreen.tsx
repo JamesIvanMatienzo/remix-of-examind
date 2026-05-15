@@ -3,13 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-
-const subjectData: Record<string, { name: string; code: string; professor: string; daysUntilExam: number; color: string }> = {
-  "1": { name: "Mathematics", code: "MATH 101", professor: "Dr. Santos", daysUntilExam: 2, color: "#D85A30" },
-  "2": { name: "Physics", code: "PHYS 201", professor: "Prof. Reyes", daysUntilExam: 5, color: "#1D9E75" },
-  "3": { name: "Filipino", code: "FIL 101", professor: "Prof. Cruz", daysUntilExam: 10, color: "#534AB7" },
-  "4": { name: "History", code: "HIST 101", professor: "Dr. Garcia", daysUntilExam: 14, color: "#EF9F27" },
-};
+import { defaultSubjects } from "./SubjectsPage";
 
 const files = [
   { name: "Midterm Exam 2024.pdf", type: "Exam", date: "Mar 15, 2024", icon: FileText },
@@ -31,7 +25,14 @@ export default function SubjectFolderScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Files");
-  const subject = subjectData[id || "1"] || subjectData["1"];
+  
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
+
+  // Find the matching subject, fallback to the first one if it somehow fails
+  const subject = subjects.find((s: any) => s.id === id) || subjects[0];
 
   return (
     <div className="min-h-screen bg-surface">

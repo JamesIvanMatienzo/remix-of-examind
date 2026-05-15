@@ -5,12 +5,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { defaultSubjects } from "./SubjectsPage";
 
 const folderColors = ["#534AB7", "#D85A30", "#1D9E75", "#EF9F27", "#3B82F6", "#EC4899", "#8B5CF6", "#F97316"];
 
 export default function AddSubjectScreen() {
   const navigate = useNavigate();
   const [selectedColor, setSelectedColor] = useState(folderColors[0]);
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+
+  const handleCreateSubject = () => {
+    if (!name.trim()) return; 
+
+    const saved = localStorage.getItem("examind_subjects");
+    const currentSubjects = saved ? JSON.parse(saved) : defaultSubjects;
+    
+    const newSubject = {
+      id: Date.now().toString(),
+      name: name,
+      code: code || "No Code",
+      files: 0,
+      daysUntilExam: 30,
+      color: selectedColor,
+      lastAccessed: "Just now"
+    };
+
+    const updatedSubjects = [...currentSubjects, newSubject];
+    localStorage.setItem("examind_subjects", JSON.stringify(updatedSubjects));
+    navigate("/subjects");
+  };
 
   return (
     <div className="min-h-screen bg-background px-6 py-6">
@@ -24,12 +48,22 @@ export default function AddSubjectScreen() {
       <div className="space-y-5">
         <div className="space-y-2">
           <Label>Subject Name</Label>
-          <Input placeholder="e.g. Mathematics" className="h-12 rounded-xl" />
+          <Input 
+            placeholder="e.g. Mathematics" 
+            className="h-12 rounded-xl"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
         <div className="space-y-2">
           <Label>Course Code (optional)</Label>
-          <Input placeholder="e.g. MATH 101" className="h-12 rounded-xl" />
+          <Input 
+            placeholder="e.g. MATH 101" 
+            className="h-12 rounded-xl"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
         </div>
 
         <div className="space-y-2">
@@ -88,7 +122,11 @@ export default function AddSubjectScreen() {
           <Input type="date" className="h-12 rounded-xl" />
         </div>
 
-        <Button className="w-full h-12 rounded-xl text-base font-semibold mt-6" onClick={() => navigate("/subjects")}>
+        <Button 
+          className="w-full h-12 rounded-xl text-base font-semibold mt-6" 
+          onClick={handleCreateSubject}
+          disabled={!name.trim()}
+        >
           Create Subject
         </Button>
       </div>

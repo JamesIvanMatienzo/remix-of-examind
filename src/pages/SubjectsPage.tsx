@@ -4,7 +4,7 @@ import { Search, Plus, MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import BottomNav from "@/components/BottomNav";
 
-const subjects = [
+export const defaultSubjects = [
   { id: "1", name: "Mathematics", code: "MATH 101", files: 12, daysUntilExam: 2, color: "#D85A30", lastAccessed: "Today" },
   { id: "2", name: "Physics", code: "PHYS 201", files: 8, daysUntilExam: 5, color: "#1D9E75", lastAccessed: "Yesterday" },
   { id: "3", name: "Filipino", code: "FIL 101", files: 6, daysUntilExam: 10, color: "#534AB7", lastAccessed: "2 days ago" },
@@ -20,14 +20,19 @@ function getCountdownColor(days: number) {
 export default function SubjectsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  
+  const [subjects, setSubjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
 
-  const filtered = subjects.filter((s) =>
+  const filtered = subjects.filter((s: any) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-surface pb-20">
-      <div className="bg-card px-6 pt-12 pb-4 border-b">
+    <div className="min-h-screen bg-surface pb-[max(6rem,env(safe-area-inset-bottom))]">
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md px-6 pt-[max(3rem,env(safe-area-inset-top))] pb-4 border-b border-border/50">
         <h1 className="text-2xl font-bold mb-4">Subjects</h1>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
