@@ -1,6 +1,6 @@
-# ExamInd Remix
+# Examind
 
-ExamInd Remix is a sophisticated, mobile-first exam preparation and study assistant designed to empower students with AI-driven insights and structured practice tools. Built with a modern tech stack, it provides a seamless experience for managing subjects, tracking scores, and generating personalized study plans.
+Examind is a sophisticated, mobile-first exam preparation and study assistant designed to empower students with AI-driven insights and structured practice tools. Built with a modern tech stack, it provides a seamless experience for managing subjects, tracking scores, and generating personalized study plans.
 
 ## 🚀 Key Features
 
