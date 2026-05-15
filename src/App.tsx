@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SubjectsProvider } from "@/contexts/SubjectsContext";
 
 import SplashScreen from "./pages/SplashScreen";
 import WelcomeScreen from "./pages/WelcomeScreen";
@@ -35,6 +36,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <SubjectsProvider>
       <BrowserRouter>
         <div className="mx-auto w-full max-w-[430px] min-h-screen relative bg-background shadow-2xl">
           <Routes>
@@ -64,6 +66,7 @@ const App = () => (
           </Routes>
         </div>
       </BrowserRouter>
+      </SubjectsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

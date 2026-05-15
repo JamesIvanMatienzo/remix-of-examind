@@ -2,13 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Target, Layers } from "lucide-react";
-
-const subjects = [
-  { id: "1", name: "Mathematics", code: "MATH 101" },
-  { id: "2", name: "Physics", code: "PHYS 201" },
-  { id: "3", name: "Filipino", code: "FIL 101" },
-  { id: "4", name: "History", code: "HIST 101" },
-];
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 const questionTypes = [
   "Multiple Choice",
@@ -33,6 +27,7 @@ const focusOptions = ["All Topics", "Specific Chapter", "High-Probability Only"]
 export default function PracticeSetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { subjects } = useSubjects();
   const preselectedSubject = searchParams.get("subject") || "";
 
   const [selectedSubject, setSelectedSubject] = useState(preselectedSubject);
@@ -50,8 +45,13 @@ export default function PracticeSetupPage() {
   const canGenerate = selectedSubject && selectedTypes.length > 0;
 
   const handleGenerate = () => {
+    // Find the subject name for the selected ID
+    const subject = subjects.find((s) => s.id === selectedSubject);
+    const subjectName = subject?.name || "Mathematics";
+
     const params = new URLSearchParams({
       subject: selectedSubject,
+      subjectName,
       items: items.toString(),
       time: timeLimit.toString(),
       focus,

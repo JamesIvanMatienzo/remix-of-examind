@@ -34,7 +34,7 @@ export default function SubjectFolderScreen() {
   const subject = subjectData[id || "1"] || subjectData["1"];
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
       {/* Header */}
       <div className="px-6 pt-10 pb-4" style={{ backgroundColor: subject.color }}>
         <div className="flex items-center gap-3 mb-3">
@@ -72,7 +72,7 @@ export default function SubjectFolderScreen() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 pb-40">
         {activeTab === "Files" && (
           <div className="space-y-3">
             {/* Quick Stats */}
@@ -106,20 +106,21 @@ export default function SubjectFolderScreen() {
               </div>
             ))}
 
-            {/* Upload FAB */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              className="fixed right-6 bottom-24 w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg"
-            >
-              <Plus className="h-6 w-6 text-primary-foreground" />
-            </motion.button>
+            {/* Floating Action Elements */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none flex flex-col items-end gap-4">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg pointer-events-auto"
+              >
+                <Plus className="h-6 w-6 text-primary-foreground" />
+              </motion.button>
 
-            {/* Analyze Button */}
-            <div className="fixed bottom-20 left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface to-transparent pt-8">
-              <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2">
-                <Sparkles className="h-5 w-5" />
-                Analyze all files with AI
-              </Button>
+              <div className="w-full pointer-events-auto">
+                <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2 shadow-lg">
+                  <Sparkles className="h-5 w-5" />
+                  Analyze all files with AI
+                </Button>
+              </div>
             </div>
           </div>
         )}

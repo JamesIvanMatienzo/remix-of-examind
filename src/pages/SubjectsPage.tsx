@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Plus, MoreVertical } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import BottomNav from "@/components/BottomNav";
-
-const subjects = [
-  { id: "1", name: "Mathematics", code: "MATH 101", files: 12, daysUntilExam: 2, color: "#D85A30", lastAccessed: "Today" },
-  { id: "2", name: "Physics", code: "PHYS 201", files: 8, daysUntilExam: 5, color: "#1D9E75", lastAccessed: "Yesterday" },
-  { id: "3", name: "Filipino", code: "FIL 101", files: 6, daysUntilExam: 10, color: "#534AB7", lastAccessed: "2 days ago" },
-  { id: "4", name: "History", code: "HIST 101", files: 4, daysUntilExam: 14, color: "#EF9F27", lastAccessed: "3 days ago" },
-];
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 function getCountdownColor(days: number) {
   if (days <= 3) return "bg-destructive text-destructive-foreground";
@@ -19,6 +13,7 @@ function getCountdownColor(days: number) {
 
 export default function SubjectsPage() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
   const [search, setSearch] = useState("");
 
   const filtered = subjects.filter((s) =>
@@ -52,7 +47,7 @@ export default function SubjectsPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm">{s.name}</p>
-              <p className="text-xs text-muted-foreground">{s.code} · {s.files} files · {s.lastAccessed}</p>
+              <p className="text-xs text-muted-foreground">{s.code} · {s.files} files{s.lastAccessed ? ` · ${s.lastAccessed}` : ""}</p>
             </div>
             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${getCountdownColor(s.daysUntilExam)}`}>
               {s.daysUntilExam}d

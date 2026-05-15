@@ -2,35 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flag, ChevronLeft, ChevronRight, X, Clock } from "lucide-react";
+import { getQuestionsForSubject, type Question } from "@/data/dummyExams";
 
-interface Question {
-  id: number;
-  type: string;
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  topic: string;
-}
-
-// Demo questions
-const generateQuestions = (count: number, types: string[]): Question[] => {
-  const pool: Omit<Question, "id">[] = [
-    { type: "Multiple Choice", question: "What is the derivative of x²?", options: ["x", "2x", "2", "x²"], correctAnswer: "2x", topic: "Derivatives" },
-    { type: "Multiple Choice", question: "The integral of 1/x dx is:", options: ["ln|x| + C", "x² + C", "1/x² + C", "e^x + C"], correctAnswer: "ln|x| + C", topic: "Integrals" },
-    { type: "True or False", question: "The derivative of a constant is always zero.", options: ["True", "False"], correctAnswer: "True", topic: "Derivatives" },
-    { type: "True or False", question: "Every continuous function is differentiable.", options: ["True", "False"], correctAnswer: "False", topic: "Continuity" },
-    { type: "Identification", question: "What theorem states that if f is continuous on [a,b], then f attains a maximum and minimum?", correctAnswer: "Extreme Value Theorem", topic: "Theorems" },
-    { type: "Multiple Choice", question: "lim(x→0) sin(x)/x equals:", options: ["0", "1", "∞", "undefined"], correctAnswer: "1", topic: "Limits" },
-    { type: "Fill in the Blank", question: "The chain rule states: d/dx[f(g(x))] = f'(g(x)) · ___", correctAnswer: "g'(x)", topic: "Derivatives" },
-    { type: "Multiple Choice", question: "Which of the following is NOT a type of discontinuity?", options: ["Jump", "Removable", "Infinite", "Linear"], correctAnswer: "Linear", topic: "Continuity" },
-    { type: "True or False", question: "The sum of two convergent series is always convergent.", options: ["True", "False"], correctAnswer: "True", topic: "Series" },
-    { type: "Identification", question: "Name the rule used to evaluate limits of the form 0/0 or ∞/∞.", correctAnswer: "L'Hôpital's Rule", topic: "Limits" },
-    { type: "Multiple Choice", question: "∫ e^x dx equals:", options: ["e^x + C", "xe^x + C", "e^(x+1) + C", "ln(e^x) + C"], correctAnswer: "e^x + C", topic: "Integrals" },
-    { type: "Multiple Choice", question: "What is the second derivative test used for?", options: ["Finding limits", "Classifying critical points", "Evaluating integrals", "Testing convergence"], correctAnswer: "Classifying critical points", topic: "Derivatives" },
-    { type: "True or False", question: "A function can have more than one absolute maximum on a closed interval.", options: ["True", "False"], correctAnswer: "False", topic: "Theorems" },
-    { type: "Fill in the Blank", question: "The Fundamental Theorem of Calculus connects ___ and integration.", correctAnswer: "differentiation", topic: "Theorems" },
-    { type: "Multiple Choice", question: "The derivative of sin(x) is:", options: ["cos(x)", "-cos(x)", "sin(x)", "-sin(x)"], correctAnswer: "cos(x)", topic: "Derivatives" },
-  ];
+// Generate `count` questions from the subject-specific pool, filtered by selected types
+const generateQuestions = (count: number, types: string[], subjectName: string): Question[] => {
+  const pool = getQuestionsForSubject(subjectName);
 
   const filtered = types.length > 0 ? pool.filter((q) => types.includes(q.type)) : pool;
   const source = filtered.length > 0 ? filtered : pool;
@@ -55,13 +31,15 @@ export default function ActiveQuizPage() {
   const timeLimitMin = parseInt(searchParams.get("time") || "0");
   const typesParam = searchParams.get("types") || "";
   const types = typesParam ? typesParam.split(",") : [];
+  const subjectName = searchParams.get("subjectName") || "Mathematics";
 
-  const [questions] = useState(() => generateQuestions(itemCount, types));
+  const [questions] = useState(() => generateQuestions(itemCount, types, subjectName));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [flagged, setFlagged] = useState<Set<number>>(new Set());
   const [timeLeft, setTimeLeft] = useState(timeLimitMin * 60);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const hasTimer = timeLimitMin > 0;
 
@@ -123,7 +101,7 @@ export default function ActiveQuizPage() {
       {/* Top Bar */}
       <div className="bg-card px-4 pt-12 pb-3 border-b">
         <div className="flex items-center justify-between">
-          <button onClick={() => setShowConfirm(true)} className="text-muted-foreground">
+          <button onClick={() => setShowExitConfirm(true)} className="text-muted-foreground">
             <X className="h-5 w-5" />
           </button>
           <div className="text-center">
@@ -261,7 +239,7 @@ export default function ActiveQuizPage() {
         )}
       </div>
 
-      {/* Confirm Dialog */}
+      {/* Submit Confirm Dialog */}
       <AnimatePresence>
         {showConfirm && (
           <motion.div
@@ -295,6 +273,44 @@ export default function ActiveQuizPage() {
                   className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold"
                 >
                   Submit
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exit Confirm Dialog */}
+      <AnimatePresence>
+        {showExitConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-card rounded-2xl p-6 w-full max-w-sm"
+            >
+              <h3 className="text-lg font-bold mb-2">Exit Practice Exam?</h3>
+              <p className="text-sm text-muted-foreground mb-1">
+                Are you sure you want to exit? Your progress will be lost.
+              </p>
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={() => setShowExitConfirm(false)}
+                  className="flex-1 py-2.5 rounded-xl border text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => navigate("/practice")}
+                  className="flex-1 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold"
+                >
+                  Exit
                 </button>
               </div>
             </motion.div>

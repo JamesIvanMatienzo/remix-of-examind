@@ -2,13 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, Upload, Zap, Calendar, Sparkles } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-
-const subjects = [
-  { id: "1", name: "Mathematics", code: "MATH 101", files: 12, daysUntilExam: 2, color: "#D85A30" },
-  { id: "2", name: "Physics", code: "PHYS 201", files: 8, daysUntilExam: 5, color: "#1D9E75" },
-  { id: "3", name: "Filipino", code: "FIL 101", files: 6, daysUntilExam: 10, color: "#534AB7" },
-  { id: "4", name: "History", code: "HIST 101", files: 4, daysUntilExam: 14, color: "#EF9F27" },
-];
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 function getCountdownColor(days: number) {
   if (days <= 3) return "bg-destructive text-destructive-foreground";
@@ -18,6 +12,7 @@ function getCountdownColor(days: number) {
 
 export default function HomeDashboard() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
 
   const urgentExam = subjects.find((s) => s.daysUntilExam <= 3);
 
@@ -61,7 +56,7 @@ export default function HomeDashboard() {
         <div>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">UPCOMING EXAMS</h2>
           <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
-            {subjects
+            {[...subjects]
               .sort((a, b) => a.daysUntilExam - b.daysUntilExam)
               .map((s) => (
                 <div key={s.id} className="bg-card rounded-xl p-3 min-w-[140px] border shrink-0">

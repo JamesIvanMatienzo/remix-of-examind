@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Zap, Clock, BookOpen, History, ChevronRight } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-
-const subjects = [
-  { id: "1", name: "Mathematics", code: "MATH 101", color: "#D85A30" },
-  { id: "2", name: "Physics", code: "PHYS 201", color: "#1D9E75" },
-  { id: "3", name: "Filipino", code: "FIL 101", color: "#534AB7" },
-  { id: "4", name: "History", code: "HIST 101", color: "#EF9F27" },
-];
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 const recentAttempts = [
   { id: "r1", subject: "Mathematics", topic: "Chapter 3 — Derivatives", items: 20, score: 16, date: "Apr 14" },
@@ -21,6 +15,7 @@ type Tab = "generated" | "saved" | "history";
 
 export default function PracticePage() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
   const [tab, setTab] = useState<Tab>("generated");
 
   const tabs: { key: Tab; label: string; icon: typeof Zap }[] = [
