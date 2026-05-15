@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles, Upload, X, File } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { defaultSubjects } from "./SubjectsPage";
 
@@ -43,11 +43,11 @@ export default function SubjectFolderScreen() {
   const subject = subjects.find((s: any) => s.id === id) || subjects[0];
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
       {/* Header */}
       <div className="px-6 pt-10 pb-4" style={{ backgroundColor: subject.color }}>
         <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => navigate(-1)} className="text-white/80">
+          <button onClick={() => navigate("/home")} className="text-white/80">
             <ArrowLeft className="h-6 w-6" />
           </button>
           <div className="flex-1">
@@ -67,9 +67,8 @@ export default function SubjectFolderScreen() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === tab ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`px-4 py-3 text-sm font-medium transition-colors relative ${activeTab === tab ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               {tab}
               {activeTab === tab && (
@@ -81,7 +80,7 @@ export default function SubjectFolderScreen() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4 pb-40">
         {activeTab === "Files" && (
           <div className="space-y-3">
             {/* Quick Stats */}
@@ -190,6 +189,88 @@ export default function SubjectFolderScreen() {
           </div>
         )}
       </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        multiple
+        onChange={handleFileChange}
+      />
+
+      {/* Upload Modal */}
+      <AnimatePresence>
+        {showUploadModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4"
+            onClick={() => setShowUploadModal(false)}
+          >
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-card rounded-2xl w-full max-w-[400px] p-5 mb-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">Upload Files</h3>
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5">
+                Add exam papers, quizzes, modules, or handwritten notes to your {subject.name} folder.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect(".pdf,.doc,.docx")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <FileText className="h-8 w-8 text-primary" />
+                  <span className="text-xs font-medium">PDF / DOCX</span>
+                  <span className="text-[10px] text-muted-foreground">Documents</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect("image/*")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <Image className="h-8 w-8 text-emerald-500" />
+                  <span className="text-xs font-medium">Images</span>
+                  <span className="text-[10px] text-muted-foreground">Photos / Scans</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect(".ppt,.pptx,.xls,.xlsx")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <File className="h-8 w-8 text-amber-500" />
+                  <span className="text-xs font-medium">PPT / Excel</span>
+                  <span className="text-[10px] text-muted-foreground">Presentations</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleFileSelect("*")}
+                  className="bg-surface border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors"
+                >
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-xs font-medium">Any File</span>
+                  <span className="text-[10px] text-muted-foreground">Browse all</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

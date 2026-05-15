@@ -12,42 +12,34 @@ interface Question {
   topic: string;
 }
 
-const mathPool: Omit<Question, "id">[] = [
-  { type: "Multiple Choice", question: "What is the derivative of x²?", options: ["x", "2x", "2", "x²"], correctAnswer: "2x", topic: "Derivatives" },
-  { type: "Multiple Choice", question: "The integral of 1/x dx is:", options: ["ln|x| + C", "x² + C", "1/x² + C", "e^x + C"], correctAnswer: "ln|x| + C", topic: "Integrals" },
-  { type: "True or False", question: "The derivative of a constant is always zero.", options: ["True", "False"], correctAnswer: "True", topic: "Derivatives" },
-];
-
-const physicsPool: Omit<Question, "id">[] = [
-  { type: "Multiple Choice", question: "What is the formula for Force?", options: ["F=ma", "E=mc²", "v=d/t", "W=Fd"], correctAnswer: "F=ma", topic: "Mechanics" },
-  { type: "True or False", question: "Gravity accelerates all objects at the same rate in a vacuum.", options: ["True", "False"], correctAnswer: "True", topic: "Gravity" },
-  { type: "Identification", question: "What is the SI unit of energy?", correctAnswer: "Joule", topic: "Thermodynamics" },
-];
-
-const filipinoPool: Omit<Question, "id">[] = [
-  { type: "Multiple Choice", question: "Sino ang sumulat ng Noli Me Tangere?", options: ["Andres Bonifacio", "Jose Rizal", "Apolinario Mabini", "Emilio Aguinaldo"], correctAnswer: "Jose Rizal", topic: "Panitikan" },
-  { type: "True or False", question: "Ang salitang 'ng' ay ginagamit pananda sa tuwirang layon.", options: ["True", "False"], correctAnswer: "True", topic: "Balarila" },
-];
-
-const historyPool: Omit<Question, "id">[] = [
-  { type: "Multiple Choice", question: "In what year did the Philippines declare independence from Spain?", options: ["1896", "1898", "1946", "1521"], correctAnswer: "1898", topic: "Independence" },
-  { type: "Identification", question: "Who was the first President of the Philippine Republic?", correctAnswer: "Emilio Aguinaldo", topic: "Presidents" },
-];
-
-const generateQuestions = (count: number, types: string[], subjectId: string): Question[] => {
-  let pool = mathPool; // Default fallback
-  if (subjectId === "2") pool = physicsPool;
-  if (subjectId === "3") pool = filipinoPool;
-  if (subjectId === "4") pool = historyPool;
+// Demo questions
+const generateQuestions = (count: number, types: string[]): Question[] => {
+  const pool: Omit<Question, "id">[] = [
+    { type: "Multiple Choice", question: "What is the derivative of x²?", options: ["x", "2x", "2", "x²"], correctAnswer: "2x", topic: "Derivatives" },
+    { type: "Multiple Choice", question: "The integral of 1/x dx is:", options: ["ln|x| + C", "x² + C", "1/x² + C", "e^x + C"], correctAnswer: "ln|x| + C", topic: "Integrals" },
+    { type: "True or False", question: "The derivative of a constant is always zero.", options: ["True", "False"], correctAnswer: "True", topic: "Derivatives" },
+    { type: "True or False", question: "Every continuous function is differentiable.", options: ["True", "False"], correctAnswer: "False", topic: "Continuity" },
+    { type: "Identification", question: "What theorem states that if f is continuous on [a,b], then f attains a maximum and minimum?", correctAnswer: "Extreme Value Theorem", topic: "Theorems" },
+    { type: "Multiple Choice", question: "lim(x→0) sin(x)/x equals:", options: ["0", "1", "∞", "undefined"], correctAnswer: "1", topic: "Limits" },
+    { type: "Fill in the Blank", question: "The chain rule states: d/dx[f(g(x))] = f'(g(x)) · ___", correctAnswer: "g'(x)", topic: "Derivatives" },
+    { type: "Multiple Choice", question: "Which of the following is NOT a type of discontinuity?", options: ["Jump", "Removable", "Infinite", "Linear"], correctAnswer: "Linear", topic: "Continuity" },
+    { type: "True or False", question: "The sum of two convergent series is always convergent.", options: ["True", "False"], correctAnswer: "True", topic: "Series" },
+    { type: "Identification", question: "Name the rule used to evaluate limits of the form 0/0 or ∞/∞.", correctAnswer: "L'Hôpital's Rule", topic: "Limits" },
+    { type: "Multiple Choice", question: "∫ e^x dx equals:", options: ["e^x + C", "xe^x + C", "e^(x+1) + C", "ln(e^x) + C"], correctAnswer: "e^x + C", topic: "Integrals" },
+    { type: "Multiple Choice", question: "What is the second derivative test used for?", options: ["Finding limits", "Classifying critical points", "Evaluating integrals", "Testing convergence"], correctAnswer: "Classifying critical points", topic: "Derivatives" },
+    { type: "True or False", question: "A function can have more than one absolute maximum on a closed interval.", options: ["True", "False"], correctAnswer: "False", topic: "Theorems" },
+    { type: "Fill in the Blank", question: "The Fundamental Theorem of Calculus connects ___ and integration.", correctAnswer: "differentiation", topic: "Theorems" },
+    { type: "Multiple Choice", question: "The derivative of sin(x) is:", options: ["cos(x)", "-cos(x)", "sin(x)", "-sin(x)"], correctAnswer: "cos(x)", topic: "Derivatives" },
+  ];
 
   const filtered = types.length > 0 ? pool.filter((q) => types.includes(q.type)) : pool;
   const source = filtered.length > 0 ? filtered : pool;
   const questions: Question[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     questions.push({ ...source[i % source.length], id: i + 1 });
   }
-  
+
   return questions;
 };
 
@@ -66,15 +58,15 @@ export default function ActiveQuizPage() {
   const subjectId = searchParams.get("subject") || "1";
   const typesParam = searchParams.get("types") || "";
   const types = typesParam ? typesParam.split(",") : [];
+  const subjectName = searchParams.get("subjectName") || "Mathematics";
 
-  const [questions] = useState(() => generateQuestions(itemCount, types, subjectId));
+  const [questions] = useState(() => generateQuestions(itemCount, types));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [flagged, setFlagged] = useState<Set<number>>(new Set());
   const [timeLeft, setTimeLeft] = useState(timeLimitMin * 60);
-  
-  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const hasTimer = timeLimitMin > 0;
 
   useEffect(() => {
@@ -95,17 +87,17 @@ export default function ActiveQuizPage() {
   const current = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const vibrate = (ms: number) => { 
-    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(ms); 
+  const vibrate = (ms: number) => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(ms);
   };
 
   const setAnswer = (value: string) => {
-    vibrate(40); 
+    vibrate(40);
     setAnswers((prev) => ({ ...prev, [current.id]: value }));
   };
 
   const toggleFlag = () => {
-    vibrate(40); 
+    vibrate(40);
     setFlagged((prev) => {
       const next = new Set(prev);
       if (next.has(current.id)) next.delete(current.id);
@@ -141,7 +133,7 @@ export default function ActiveQuizPage() {
       {/* Top Bar */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-3 border-b border-border/50 shadow-sm">
         <div className="flex items-center justify-between">
-          <button onClick={() => setShowExitConfirm(true)} className="text-muted-foreground hover:text-destructive transition-colors">
+          <button onClick={() => setShowConfirm(true)} className="text-muted-foreground">
             <X className="h-5 w-5" />
           </button>
           <div className="text-center">
@@ -198,15 +190,13 @@ export default function ActiveQuizPage() {
                       key={opt}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setAnswer(opt)}
-                      className={`w-full p-3.5 rounded-xl text-left text-sm font-medium border transition-colors flex items-center gap-3 ${
-                        selected
+                      className={`w-full p-3.5 rounded-xl text-left text-sm font-medium border transition-colors flex items-center gap-3 ${selected
                           ? "bg-secondary border-primary text-foreground"
                           : "bg-card border-border text-foreground"
-                      }`}
+                        }`}
                     >
-                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                        selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                      }`}>
+                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        }`}>
                         {letter}
                       </span>
                       {opt}
@@ -225,11 +215,10 @@ export default function ActiveQuizPage() {
                       key={opt}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => setAnswer(opt)}
-                      className={`py-4 rounded-xl text-sm font-semibold border transition-colors ${
-                        selected
+                      className={`py-4 rounded-xl text-sm font-semibold border transition-colors ${selected
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-card text-foreground border-border"
-                      }`}
+                        }`}
                     >
                       {opt}
                     </motion.button>
@@ -279,7 +268,7 @@ export default function ActiveQuizPage() {
         )}
       </div>
 
-      {/* Submit Exam Confirm Dialog */}
+      {/* Confirm Dialog */}
       <AnimatePresence>
         {showSubmitConfirm && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
@@ -308,6 +297,44 @@ export default function ActiveQuizPage() {
               <div className="flex gap-3">
                 <button onClick={() => setShowExitConfirm(false)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button>
                 <button onClick={() => navigate("/practice")} className="flex-1 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold">Quit</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exit Confirm Dialog */}
+      <AnimatePresence>
+        {showExitConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-card rounded-2xl p-6 w-full max-w-sm"
+            >
+              <h3 className="text-lg font-bold mb-2">Exit Practice Exam?</h3>
+              <p className="text-sm text-muted-foreground mb-1">
+                Are you sure you want to exit? Your progress will be lost.
+              </p>
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={() => setShowExitConfirm(false)}
+                  className="flex-1 py-2.5 rounded-xl border text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => navigate("/practice")}
+                  className="flex-1 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold"
+                >
+                  Exit
+                </button>
               </div>
             </motion.div>
           </motion.div>

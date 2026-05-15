@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Plus, MoreVertical } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import BottomNav from "@/components/BottomNav";
 
@@ -19,8 +19,9 @@ function getCountdownColor(days: number) {
 
 export default function SubjectsPage() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
   const [search, setSearch] = useState("");
-  
+
   const [subjects, setSubjects] = useState(() => {
     const saved = localStorage.getItem("examind_subjects");
     return saved ? JSON.parse(saved) : defaultSubjects;
@@ -57,7 +58,7 @@ export default function SubjectsPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm">{s.name}</p>
-              <p className="text-xs text-muted-foreground">{s.code} · {s.files} files · {s.lastAccessed}</p>
+              <p className="text-xs text-muted-foreground">{s.code} · {s.files} files{s.lastAccessed ? ` · ${s.lastAccessed}` : ""}</p>
             </div>
             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${getCountdownColor(s.daysUntilExam)}`}>
               {s.daysUntilExam}d

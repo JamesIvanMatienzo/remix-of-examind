@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Zap, Clock, BookOpen, History, ChevronRight } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { defaultSubjects } from "./SubjectsPage";
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 const recentAttempts = [
   { id: "r1", subject: "Mathematics", topic: "Chapter 3 — Derivatives", items: 20, score: 16, date: "Apr 14" },
@@ -15,6 +15,7 @@ type Tab = "generated" | "saved" | "history";
 
 export default function PracticePage() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
   const [tab, setTab] = useState<Tab>("generated");
 
   const [subjects] = useState(() => {
@@ -42,11 +43,10 @@ export default function PracticePage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              tab === t.key
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tab === t.key
                 ? "bg-primary text-primary-foreground"
                 : "bg-card border text-muted-foreground"
-            }`}
+              }`}
           >
             <t.icon className="h-3.5 w-3.5" />
             {t.label}

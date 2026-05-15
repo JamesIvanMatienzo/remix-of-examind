@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, Upload, Zap, Calendar, Sparkles } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import { useSubjects } from "@/contexts/SubjectsContext";
 import { defaultSubjects } from "./SubjectsPage";
 
 function getCountdownColor(days: number) {
@@ -13,6 +14,7 @@ function getCountdownColor(days: number) {
 
 export default function HomeDashboard() {
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
 
   // Load the dynamic subjects from localStorage
   const [subjects] = useState(() => {
@@ -63,7 +65,7 @@ export default function HomeDashboard() {
         <div>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">UPCOMING EXAMS</h2>
           <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
-            {subjects
+            {[...subjects]
               .sort((a, b) => a.daysUntilExam - b.daysUntilExam)
               .map((s) => (
                 <div key={s.id} className="bg-card rounded-xl p-3 min-w-[140px] border shrink-0">
