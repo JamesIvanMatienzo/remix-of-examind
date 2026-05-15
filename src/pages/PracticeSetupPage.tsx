@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Target, Layers } from "lucide-react";
-import { useSubjects } from "@/contexts/SubjectsContext";
+import { defaultSubjects } from "./SubjectsPage";
 
 const questionTypes = [
   "Multiple Choice",
@@ -29,6 +29,11 @@ export default function PracticeSetupPage() {
   const [searchParams] = useSearchParams();
   const { subjects } = useSubjects();
   const preselectedSubject = searchParams.get("subject") || "";
+
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
 
   const [selectedSubject, setSelectedSubject] = useState(preselectedSubject);
   const [items, setItems] = useState(20);
@@ -84,11 +89,10 @@ export default function PracticeSetupPage() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSubject(s.id)}
-                className={`p-3 rounded-xl text-left text-sm font-medium border transition-colors ${
-                  selectedSubject === s.id
+                className={`p-3 rounded-xl text-left text-sm font-medium border transition-colors ${selectedSubject === s.id
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-foreground border-border"
-                }`}
+                  }`}
               >
                 {s.name}
                 <span className="block text-[10px] mt-0.5 opacity-70">{s.code}</span>
@@ -107,11 +111,10 @@ export default function PracticeSetupPage() {
               <button
                 key={n}
                 onClick={() => setItems(n)}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                  items === n
+                className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${items === n
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-foreground border-border"
-                }`}
+                  }`}
               >
                 {n}
               </button>
@@ -129,11 +132,10 @@ export default function PracticeSetupPage() {
               <button
                 key={t.value}
                 onClick={() => setTimeLimit(t.value)}
-                className={`py-2 rounded-lg text-xs font-medium border transition-colors ${
-                  timeLimit === t.value
+                className={`py-2 rounded-lg text-xs font-medium border transition-colors ${timeLimit === t.value
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-foreground border-border"
-                }`}
+                  }`}
               >
                 {t.label}
               </button>
@@ -149,11 +151,10 @@ export default function PracticeSetupPage() {
               <button
                 key={f}
                 onClick={() => setFocus(f)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  focus === f
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${focus === f
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-foreground border-border"
-                }`}
+                  }`}
               >
                 {f}
               </button>
@@ -169,11 +170,10 @@ export default function PracticeSetupPage() {
               <button
                 key={qt}
                 onClick={() => toggleType(qt)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  selectedTypes.includes(qt)
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${selectedTypes.includes(qt)
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-foreground border-border"
-                }`}
+                  }`}
               >
                 {qt}
               </button>
@@ -186,11 +186,10 @@ export default function PracticeSetupPage() {
           whileTap={{ scale: 0.97 }}
           disabled={!canGenerate}
           onClick={handleGenerate}
-          className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-colors ${
-            canGenerate
+          className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-colors ${canGenerate
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground cursor-not-allowed"
-          }`}
+            }`}
         >
           Generate Practice Exam
         </motion.button>

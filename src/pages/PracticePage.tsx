@@ -18,6 +18,11 @@ export default function PracticePage() {
   const { subjects } = useSubjects();
   const [tab, setTab] = useState<Tab>("generated");
 
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
+
   const tabs: { key: Tab; label: string; icon: typeof Zap }[] = [
     { key: "generated", label: "Generated", icon: Zap },
     { key: "saved", label: "Saved", icon: BookOpen },
@@ -38,11 +43,10 @@ export default function PracticePage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              tab === t.key
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tab === t.key
                 ? "bg-primary text-primary-foreground"
                 : "bg-card border text-muted-foreground"
-            }`}
+              }`}
           >
             <t.icon className="h-3.5 w-3.5" />
             {t.label}

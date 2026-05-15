@@ -3,13 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles, Upload, X, File } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-
-const subjectData: Record<string, { name: string; code: string; professor: string; daysUntilExam: number; color: string }> = {
-  "1": { name: "Mathematics", code: "MATH 101", professor: "Dr. Santos", daysUntilExam: 2, color: "#D85A30" },
-  "2": { name: "Physics", code: "PHYS 201", professor: "Prof. Reyes", daysUntilExam: 5, color: "#1D9E75" },
-  "3": { name: "Filipino", code: "FIL 101", professor: "Prof. Cruz", daysUntilExam: 10, color: "#534AB7" },
-  "4": { name: "History", code: "HIST 101", professor: "Dr. Garcia", daysUntilExam: 14, color: "#EF9F27" },
-};
+import { defaultSubjects } from "./SubjectsPage";
 
 const files = [
   { name: "Midterm Exam 2024.pdf", type: "Exam", date: "Mar 15, 2024", icon: FileText },
@@ -31,27 +25,7 @@ export default function SubjectFolderScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Files");
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const subject = subjectData[id || "1"] || subjectData["1"];
-
-  const handleFileSelect = (accept: string) => {
-    if (fileInputRef.current) {
-      fileInputRef.current.accept = accept;
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (selectedFiles && selectedFiles.length > 0) {
-      console.log("Files selected:", Array.from(selectedFiles).map((f) => f.name));
-      // TODO: Upload files to Supabase storage
-      setShowUploadModal(false);
-    }
-    // Reset input so same file can be re-selected
-    e.target.value = "";
-  };
 
   return (
     <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
@@ -78,9 +52,8 @@ export default function SubjectFolderScreen() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === tab ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`px-4 py-3 text-sm font-medium transition-colors relative ${activeTab === tab ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               {tab}
               {activeTab === tab && (
