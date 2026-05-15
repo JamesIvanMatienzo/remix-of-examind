@@ -2,13 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Target, Layers } from "lucide-react";
-
-const subjects = [
-  { id: "1", name: "Mathematics", code: "MATH 101" },
-  { id: "2", name: "Physics", code: "PHYS 201" },
-  { id: "3", name: "Filipino", code: "FIL 101" },
-  { id: "4", name: "History", code: "HIST 101" },
-];
+import { defaultSubjects } from "./SubjectsPage";
 
 const questionTypes = [
   "Multiple Choice",
@@ -34,6 +28,11 @@ export default function PracticeSetupPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const preselectedSubject = searchParams.get("subject") || "";
+
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
 
   const [selectedSubject, setSelectedSubject] = useState(preselectedSubject);
   const [items, setItems] = useState(20);
