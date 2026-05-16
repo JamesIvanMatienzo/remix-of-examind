@@ -130,9 +130,9 @@ export default function ActiveQuizPage() {
   }, [questions, answers, hasTimer, timeLimitMin, timeLeft, navigate]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       {/* Top Bar */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-3 border-b border-border/50 shadow-sm">
+      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md px-4 pt-[max(2.5rem,env(safe-area-inset-top))] pb-3 border-b border-border/50 shadow-sm shrink-0">
         <div className="flex items-center justify-between">
           <button onClick={() => setShowExitConfirm(true)} className="text-muted-foreground">
             <X className="h-5 w-5" />
@@ -163,7 +163,7 @@ export default function ActiveQuizPage() {
       </div>
 
       {/* Question Content */}
-      <div className="flex-1 px-6 py-6">
+      <div className="flex-1 px-5 py-5 overflow-y-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
@@ -242,7 +242,7 @@ export default function ActiveQuizPage() {
       </div>
 
       {/* Bottom Nav */}
-      <div className="px-6 pb-[max(2rem,env(safe-area-inset-bottom))] flex items-center gap-3">
+      <div className="px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3 flex items-center gap-3 shrink-0 border-t border-border/30">
         <button
           onClick={() => { vibrate(40); setCurrentIndex((i) => Math.max(0, i - 1)); }}
           disabled={currentIndex === 0}
@@ -288,22 +288,6 @@ export default function ActiveQuizPage() {
         )}
       </AnimatePresence>
 
-      {/* Exit Exam Confirm Dialog */}
-      <AnimatePresence>
-        {showExitConfirm && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-card rounded-2xl p-6 w-full max-w-sm border border-destructive/20">
-              <h3 className="text-lg font-bold mb-2">Quit Practice?</h3>
-              <p className="text-sm text-muted-foreground mb-5">Are you sure you want to exit? Your progress will not be saved.</p>
-              <div className="flex gap-3">
-                <button onClick={() => setShowExitConfirm(false)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button>
-                <button onClick={() => navigate("/practice")} className="flex-1 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold">Quit</button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Exit Confirm Dialog */}
       <AnimatePresence>
         {showExitConfirm && (
@@ -312,18 +296,21 @@ export default function ActiveQuizPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6"
+            onClick={() => setShowExitConfirm(false)}
           >
             <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-card rounded-2xl p-6 w-full max-w-sm"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-card rounded-2xl p-6 w-full max-w-[320px] shadow-xl"
+              onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-lg font-bold mb-2">Exit Practice Exam?</h3>
-              <p className="text-sm text-muted-foreground mb-1">
+              <p className="text-sm text-muted-foreground mb-5">
                 Are you sure you want to exit? Your progress will be lost.
               </p>
-              <div className="flex gap-3 mt-5">
+              <div className="flex gap-3">
                 <button
                   onClick={() => setShowExitConfirm(false)}
                   className="flex-1 py-2.5 rounded-xl border text-sm font-medium"

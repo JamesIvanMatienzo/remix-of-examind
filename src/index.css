@@ -102,10 +102,12 @@
 /* Ensure fixed elements stay within mobile container */
 .max-w-\[430px\] {
   isolation: isolate;
+  position: relative;
 }
 
-.max-w-\[430px\] nav.fixed,
-.max-w-\[430px\] .fixed {
+/* Scope non-overlay fixed elements (like navbars) to the container width.
+   Dialog overlays (.z-50) should remain full-screen. */
+.max-w-\[430px\] .fixed:not(.z-50) {
   max-width: 430px;
   left: 50%;
   transform: translateX(-50%);

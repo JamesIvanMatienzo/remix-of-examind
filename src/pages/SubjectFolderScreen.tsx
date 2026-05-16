@@ -47,9 +47,9 @@ export default function SubjectFolderScreen() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
+    <div className="h-[100dvh] flex flex-col bg-surface overflow-hidden relative">
       {/* Header */}
-      <div className="px-6 pt-10 pb-4" style={{ backgroundColor: subject.color }}>
+      <div className="px-5 pt-[max(2.5rem,env(safe-area-inset-top))] pb-3 shrink-0" style={{ backgroundColor: subject.color }}>
         <div className="flex items-center gap-3 mb-3">
           <button onClick={() => navigate("/home")} className="text-white/80">
             <ArrowLeft className="h-6 w-6" />
@@ -65,8 +65,8 @@ export default function SubjectFolderScreen() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-card border-b px-4">
-        <div className="flex gap-1">
+      <div className="bg-card border-b px-3 shrink-0">
+        <div className="flex gap-0.5">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -84,7 +84,7 @@ export default function SubjectFolderScreen() {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 pb-40">
+      <div className="flex-1 overflow-y-auto px-5 py-4 pb-36">
         {activeTab === "Files" && (
           <div className="space-y-3">
             {/* Quick Stats */}
@@ -119,12 +119,12 @@ export default function SubjectFolderScreen() {
             ))}
 
             {/* Combined Bottom Action Dock */}
-            <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface via-surface/95 to-transparent pt-12 z-20">
+            <div className="absolute bottom-0 left-0 right-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-surface via-surface/95 to-transparent pt-10 z-20">
               <div className="flex items-center gap-3">
                 
                 {/* 80% Width: Analyze Button */}
-                <Button className="flex-1 h-14 rounded-2xl text-base font-semibold gap-2 shadow-lg">
-                  <Sparkles className="h-5 w-5" />
+                <Button className="flex-1 h-12 sm:h-14 rounded-2xl text-sm sm:text-base font-semibold gap-2 shadow-lg">
+                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                   <span className="truncate">Analyze files with AI</span>
                 </Button>
                 
@@ -132,10 +132,10 @@ export default function SubjectFolderScreen() {
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-14 h-14 shrink-0 rounded-2xl bg-primary flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
+                  className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl bg-primary flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
                   aria-label="Upload File"
                 >
-                  <Plus className="h-6 w-6 text-primary-foreground" />
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </motion.button>
               </div>
             </div>
