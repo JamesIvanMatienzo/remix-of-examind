@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Send, Mic, Paperclip, Sparkles, Home } from "lucide-react";
+import { ArrowLeft, Send, Mic, Paperclip, Sparkles, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import InlineQuizCard from "@/components/InlineQuizCard";
 
@@ -148,23 +148,28 @@ export default function AIChatScreen() {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <div className="shrink-0 px-4 pt-10 pb-3 border-b bg-card flex items-center gap-3">
-        <button onClick={() => navigate(`/subjects/${id}`, { replace: true })} className="text-muted-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: subject.color }}>
-          <Sparkles className="h-4 w-4 text-white" />
+      <div className="sticky top-0 z-20 shrink-0 px-4 pt-[max(2.5rem,env(safe-area-inset-top))] pb-3 border-b bg-background/80 backdrop-blur-md flex items-center justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <button onClick={() => navigate(`/subjects/${id}`, { replace: true })} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: subject.color }}>
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <div className="flex-1 min-w-0 pr-2">
+            <p className="text-sm font-semibold truncate">{subject.name} Tutor</p>
+            <p className="text-[11px] text-muted-foreground truncate">{modeLabels[mode]}</p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{subject.name} Tutor</p>
-          <p className="text-[11px] text-muted-foreground">{modeLabels[mode]}</p>
-        </div>
-        <button
-          onClick={() => navigate("/home", { replace: true })}
-          className="w-9 h-9 rounded-full bg-surface border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-          title="Go to Home"
+
+        {/* UX FIX: Clear Escape Hatch to Dashboard */}
+        <button 
+          // UX FIX: Changed from "/" to "/home" so it bypasses the splash/signup screens
+          onClick={() => navigate("/home")} 
+          className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors shrink-0"
+          aria-label="Exit to Home"
         >
-          <Home className="h-4.5 w-4.5" />
+          <X className="h-4 w-4" /> 
         </button>
       </div>
 

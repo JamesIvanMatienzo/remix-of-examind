@@ -25,7 +25,22 @@ export default function SubjectFolderScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Files");
-  const subject = subjectData[id || "1"] || subjectData["1"];
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+    }
+  };
+  
+  const [subjects] = useState(() => {
+    const saved = localStorage.getItem("examind_subjects");
+    return saved ? JSON.parse(saved) : defaultSubjects;
+  });
+
+  const subject = subjects.find((s: any) => s.id === id) || subjects[0];
 
   return (
     <div className="h-screen flex flex-col bg-surface overflow-hidden relative">
@@ -99,22 +114,34 @@ export default function SubjectFolderScreen() {
               </div>
             ))}
 
-            {/* Floating Action Elements */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none flex flex-col items-end gap-4">
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => setShowUploadModal(true)}
-                className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg pointer-events-auto hover:shadow-xl transition-shadow"
-              >
-                <Plus className="h-6 w-6 text-primary-foreground" />
-              </motion.button>
+            {/* UX FIX: Hidden Native File Input */}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileUpload} 
+              className="hidden" 
+              accept=".pdf,.docx,.png,.jpg,.jpeg" 
+            />
 
-              <div className="w-full pointer-events-auto">
-                <Button className="w-full h-12 rounded-xl text-base font-semibold gap-2 shadow-lg">
+            {/* Combined Bottom Action Dock */}
+            <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface via-surface/95 to-transparent pt-12 z-20">
+              <div className="flex items-center gap-3">
+                
+                {/* 80% Width: Analyze Button */}
+                <Button className="flex-1 h-14 rounded-2xl text-base font-semibold gap-2 shadow-lg">
                   <Sparkles className="h-5 w-5" />
-                  Analyze all files with AI
+                  <span className="truncate">Analyze files with AI</span>
                 </Button>
+                
+                {/* 20% Width: Upload Button */}
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-14 h-14 shrink-0 rounded-2xl bg-primary flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
+                  aria-label="Upload File"
+                >
+                  <Plus className="h-6 w-6 text-primary-foreground" />
+                </motion.button>
               </div>
             </div>
           </div>
