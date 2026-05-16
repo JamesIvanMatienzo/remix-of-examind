@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import BottomNav from "@/components/BottomNav";
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 export const defaultSubjects = [
   { id: "1", name: "Mathematics", code: "MATH 101", files: 12, daysUntilExam: 2, color: "#D85A30", lastAccessed: "Today" },
@@ -21,11 +22,6 @@ export default function SubjectsPage() {
   const navigate = useNavigate();
   const { subjects } = useSubjects();
   const [search, setSearch] = useState("");
-
-  const [subjects, setSubjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
 
   const filtered = subjects.filter((s: any) =>
     s.name.toLowerCase().includes(search.toLowerCase())

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Target, Layers } from "lucide-react";
 import { defaultSubjects } from "./SubjectsPage";
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 const questionTypes = [
   "Multiple Choice",
@@ -29,11 +30,6 @@ export default function PracticeSetupPage() {
   const [searchParams] = useSearchParams();
   const { subjects } = useSubjects();
   const preselectedSubject = searchParams.get("subject") || "";
-
-  const [subjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
 
   const [selectedSubject, setSelectedSubject] = useState(preselectedSubject);
   const [items, setItems] = useState(20);
@@ -90,8 +86,8 @@ export default function PracticeSetupPage() {
                 key={s.id}
                 onClick={() => setSelectedSubject(s.id)}
                 className={`p-3 rounded-xl text-left text-sm font-medium border transition-colors ${selectedSubject === s.id
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border"
                   }`}
               >
                 {s.name}
@@ -112,8 +108,8 @@ export default function PracticeSetupPage() {
                 key={n}
                 onClick={() => setItems(n)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${items === n
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border"
                   }`}
               >
                 {n}
@@ -133,8 +129,8 @@ export default function PracticeSetupPage() {
                 key={t.value}
                 onClick={() => setTimeLimit(t.value)}
                 className={`py-2 rounded-lg text-xs font-medium border transition-colors ${timeLimit === t.value
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border"
                   }`}
               >
                 {t.label}
@@ -152,8 +148,8 @@ export default function PracticeSetupPage() {
                 key={f}
                 onClick={() => setFocus(f)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${focus === f
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border"
                   }`}
               >
                 {f}
@@ -171,8 +167,8 @@ export default function PracticeSetupPage() {
                 key={qt}
                 onClick={() => toggleType(qt)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${selectedTypes.includes(qt)
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-foreground border-border"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border"
                   }`}
               >
                 {qt}
@@ -187,8 +183,8 @@ export default function PracticeSetupPage() {
           disabled={!canGenerate}
           onClick={handleGenerate}
           className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-colors ${canGenerate
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-muted-foreground cursor-not-allowed"
             }`}
         >
           Generate Practice Exam
