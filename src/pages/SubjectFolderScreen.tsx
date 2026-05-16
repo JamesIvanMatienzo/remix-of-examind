@@ -118,15 +118,6 @@ export default function SubjectFolderScreen() {
               </div>
             ))}
 
-            {/* UX FIX: Hidden Native File Input */}
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileUpload} 
-              className="hidden" 
-              accept=".pdf,.docx,.png,.jpg,.jpeg" 
-            />
-
             {/* Combined Bottom Action Dock */}
             <div className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-0 right-0 px-6 pb-4 bg-gradient-to-t from-surface via-surface/95 to-transparent pt-12 z-20">
               <div className="flex items-center gap-3">
