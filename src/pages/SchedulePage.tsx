@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, ChevronLeft, ChevronRight, Sparkles, Clock, BookOpen } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { defaultSubjects } from "./SubjectsPage";
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 interface ExamEvent {
   id: string;
@@ -74,10 +74,7 @@ export default function SchedulePage() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState<Date>(today);
 
-  const [subjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
+  const { subjects } = useSubjects();
 
   const demoExams: ExamEvent[] = subjects
     .filter((s: any) => s.daysUntilExam !== undefined)

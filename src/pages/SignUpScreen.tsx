@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import logo from "@/assets/logo.png";
 
 export default function SignUpScreen() {
   const navigate = useNavigate();
@@ -16,6 +17,9 @@ export default function SignUpScreen() {
         <ArrowLeft className="h-6 w-6" />
       </button>
 
+      <div className="flex justify-center mb-8">
+        <img src={logo} alt="ExaMind Logo" className="w-32 h-auto object-contain" />
+      </div>
       <h1 className="text-2xl font-bold mb-1">Create Account</h1>
       <p className="text-muted-foreground text-sm mb-8">Start your smarter study journey</p>
 

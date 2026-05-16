@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, FileText, Image, BookOpen, MessageSquare, Zap, BarChart3, Sparkles, Upload, X, File } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { defaultSubjects } from "./SubjectsPage";
+import { useSubjects } from "@/contexts/SubjectsContext";
 
 const files = [
   { name: "Midterm Exam 2024.pdf", type: "Exam", date: "Mar 15, 2024", icon: FileText },
@@ -24,8 +24,27 @@ const tabs = ["Files", "AI Tutor", "Practice", "Insights"];
 export default function SubjectFolderScreen() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { subjects } = useSubjects();
   const [activeTab, setActiveTab] = useState("Files");
-  const subject = subjectData[id || "1"] || subjectData["1"];
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const subject = subjects.find((s) => s.id === id) || subjects[0];
+
+  const handleFileSelect = (accept: string) => {
+    if (fileInputRef.current) {
+      fileInputRef.current.accept = accept;
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      // For prototype, just close the modal
+      setShowUploadModal(false);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-surface overflow-hidden relative">

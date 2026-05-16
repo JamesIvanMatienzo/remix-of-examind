@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import logo from "@/assets/logo.png";
 
 export default function SplashScreen() {
   const navigate = useNavigate();
@@ -18,9 +19,7 @@ export default function SplashScreen() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="flex flex-col items-center gap-4"
       >
-        <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground text-3xl font-bold">E</span>
-        </div>
+        <img src={logo} alt="ExaMind Logo" className="w-48 h-auto object-contain" />
         <h1 className="text-3xl font-bold text-primary">ExaMind</h1>
         <p className="text-muted-foreground text-sm">Study smarter. Not harder. Not blindly.</p>
       </motion.div>

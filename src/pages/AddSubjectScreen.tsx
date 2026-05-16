@@ -19,34 +19,39 @@ export default function AddSubjectScreen() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [examDate, setExamDate] = useState("");
+  const [professor, setProfessor] = useState("");
+  const [semester, setSemester] = useState("");
+  const [yearLevel, setYearLevel] = useState("");
+  const [selectedColor, setSelectedColor] = useState(folderColors[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCreateSubject = () => {
-    if (!name.trim()) return; 
-
-    // Calculate days until exam
-    let daysLeft = 30; // default
-    if (examDate) {
-      const diffTime = new Date(examDate).getTime() - new Date().getTime();
-      daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const handleCreateSubject = async () => {
+    if (!name.trim()) {
+      toast({ title: "Required Field", description: "Subject name is required.", variant: "destructive" });
+      return;
     }
 
-    const saved = localStorage.getItem("examind_subjects");
-    const currentSubjects = saved ? JSON.parse(saved) : defaultSubjects;
-    
-    const newSubject = {
-      id: Date.now().toString(),
-      name: name,
-      code: code || "No Code",
-      files: 0,
-      daysUntilExam: daysLeft > 0 ? daysLeft : 0, // Prevent negative days
-      examDateString: examDate, 
-      color: selectedColor,
-      lastAccessed: "Just now"
-    };
+    setIsSubmitting(true);
+    try {
+      const success = await addSubject({
+        name: name.trim(),
+        code: code.trim() || "",
+        professor: professor.trim() || undefined,
+        semester: semester || undefined,
+        yearLevel: yearLevel || undefined,
+        color: selectedColor,
+        nextExamDate: examDate || undefined,
+      });
 
-    const updatedSubjects = [...currentSubjects, newSubject];
-    localStorage.setItem("examind_subjects", JSON.stringify(updatedSubjects));
-    navigate("/subjects");
+      if (success) {
+        navigate("/subjects");
+      }
+    } catch (error) {
+      console.error("Error creating subject:", error);
+      toast({ title: "Error", description: "Failed to create subject.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,12 +66,12 @@ export default function AddSubjectScreen() {
       <div className="space-y-5">
         <div className="space-y-2">
           <Label>Subject Name</Label>
-          <Input placeholder="e.g. Mathematics" className="h-12 rounded-xl" />
+          <Input placeholder="e.g. Mathematics" className="h-12 rounded-xl" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="space-y-2">
           <Label>Course Code (optional)</Label>
-          <Input placeholder="e.g. MATH 101" className="h-12 rounded-xl" />
+          <Input placeholder="e.g. MATH 101" className="h-12 rounded-xl" value={code} onChange={(e) => setCode(e.target.value)} />
         </div>
 
         <div className="space-y-2">
@@ -135,8 +140,12 @@ export default function AddSubjectScreen() {
           />
         </div>
 
-        <Button className="w-full h-12 rounded-xl text-base font-semibold mt-6" onClick={() => navigate("/subjects")}>
-          Create Subject
+        <Button 
+          className="w-full h-12 rounded-xl text-base font-semibold mt-6" 
+          onClick={handleCreateSubject}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create Subject"}
         </Button>
       </div>
     </div>

@@ -65,7 +65,8 @@ export default function ActiveQuizPage() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [flagged, setFlagged] = useState<Set<number>>(new Set());
   const [timeLeft, setTimeLeft] = useState(timeLimitMin * 60);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const hasTimer = timeLimitMin > 0;
 
@@ -133,7 +134,7 @@ export default function ActiveQuizPage() {
       {/* Top Bar */}
       <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md px-4 pt-[max(3rem,env(safe-area-inset-top))] pb-3 border-b border-border/50 shadow-sm">
         <div className="flex items-center justify-between">
-          <button onClick={() => setShowConfirm(true)} className="text-muted-foreground">
+          <button onClick={() => setShowExitConfirm(true)} className="text-muted-foreground">
             <X className="h-5 w-5" />
           </button>
           <div className="text-center">

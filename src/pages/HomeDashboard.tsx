@@ -5,6 +5,7 @@ import { Plus, Upload, Zap, Calendar, Sparkles } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useSubjects } from "@/contexts/SubjectsContext";
 import { defaultSubjects } from "./SubjectsPage";
+import logo from "@/assets/logo.png";
 
 function getCountdownColor(days: number) {
   if (days <= 3) return "bg-destructive text-destructive-foreground";
@@ -16,11 +17,6 @@ export default function HomeDashboard() {
   const navigate = useNavigate();
   const { subjects } = useSubjects();
 
-  // Load the dynamic subjects from localStorage
-  const [subjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
 
   // Safely check for urgent exams
   const urgentExam = subjects.find((s: any) => s.daysUntilExam !== undefined && s.daysUntilExam <= 3);
@@ -30,9 +26,12 @@ export default function HomeDashboard() {
       {/* Header */}
       <div className="bg-card px-6 pt-12 pb-6">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">Good morning,</p>
-            <h1 className="text-2xl font-bold">Ivan 👋</h1>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="ExaMind Logo" className="w-10 h-10 object-contain" />
+            <div>
+              <p className="text-sm text-muted-foreground">Good morning,</p>
+              <h1 className="text-2xl font-bold">Ivan 👋</h1>
+            </div>
           </div>
           <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
             <span className="text-primary-foreground text-sm font-bold">I</span>

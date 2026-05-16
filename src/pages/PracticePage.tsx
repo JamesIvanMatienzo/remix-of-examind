@@ -18,11 +18,6 @@ export default function PracticePage() {
   const { subjects } = useSubjects();
   const [tab, setTab] = useState<Tab>("generated");
 
-  const [subjects] = useState(() => {
-    const saved = localStorage.getItem("examind_subjects");
-    return saved ? JSON.parse(saved) : defaultSubjects;
-  });
-
   const tabs: { key: Tab; label: string; icon: typeof Zap }[] = [
     { key: "generated", label: "Generated", icon: Zap },
     { key: "saved", label: "Saved", icon: BookOpen },
